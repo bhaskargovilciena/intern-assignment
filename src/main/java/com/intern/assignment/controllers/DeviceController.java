@@ -24,7 +24,7 @@ public class DeviceController {
 
     @PostMapping("/create")
     public ResponseEntity<Device> createDevice(@RequestBody Device device) {
-        logger.debug("Device Controller: Device Creation Requested");
+        logger.info("Device Controller: Device Creation Requested");
         return new ResponseEntity<>(deviceService.createDevice(device), HttpStatus.OK);
     }
 
@@ -35,7 +35,7 @@ public class DeviceController {
             @RequestParam(value = "buildingName", required = false) String buildingName,
             @RequestParam(value = "partNumber", required = false) String partNumber
     ) {
-        logger.debug("Device Controller: Search Device function called");
-        return new ResponseEntity<>(deviceService.searchDevices(deviceName, deviceType, buildingName, partNumber), HttpStatus.OK);
+        logger.info("Device Controller: Search Device function called");
+        return new ResponseEntity<>(deviceService.searchDevices(deviceName, buildingName, partNumber, deviceType), HttpStatus.OK);
     }
 }

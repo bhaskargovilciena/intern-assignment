@@ -40,7 +40,7 @@ public class DeviceRepository {
                 .stream()
                 .map(r -> r.get("device").asNode())
                 .findFirst().orElseThrow(() -> new RuntimeException("Device could not be created"));
-        logger.debug("Device Repository: Device with ID: {} created successfully", record.elementId());
+        logger.info("Device Repository: Device with ID: {} created successfully", record.elementId());
         return device;
     }
 
@@ -79,7 +79,7 @@ public class DeviceRepository {
             device.setPartNumber(node.get("partNumber").asString());
             devices.add(device);
         });
-        logger.debug("Device Repository: Search devices function accessed with query: {}", query);
+        logger.info("Device Repository: Search devices function accessed with query: {}", query);
         return devices;
     }
 }

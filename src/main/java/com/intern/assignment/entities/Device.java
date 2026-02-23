@@ -7,6 +7,6 @@ public class Device {
     String deviceName;
     String partNumber;
     String buildingName;
-    String DeviceType;
+    String deviceType;
     int numberOfShelfPositions;
 }
