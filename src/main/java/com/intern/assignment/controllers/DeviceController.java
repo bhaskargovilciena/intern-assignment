@@ -33,9 +33,10 @@ public class DeviceController {
             @RequestParam(value = "deviceName", required = false) String deviceName,
             @RequestParam(value = "deviceType", required = false) String deviceType,
             @RequestParam(value = "buildingName", required = false) String buildingName,
-            @RequestParam(value = "partNumber", required = false) String partNumber
+            @RequestParam(value = "partNumber", required = false) String partNumber,
+            @RequestParam(value = "numberOfShelfPositions", defaultValue = "0") int numberOfShelfPositions
     ) {
         logger.info("Device Controller: Search Device function called");
-        return new ResponseEntity<>(deviceService.searchDevices(deviceName, buildingName, partNumber, deviceType), HttpStatus.OK);
+        return new ResponseEntity<>(deviceService.searchDevices(deviceName, buildingName, partNumber, deviceType, numberOfShelfPositions), HttpStatus.OK);
     }
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class Device {
+    String id;
     String deviceName;
     String partNumber;
     String buildingName;

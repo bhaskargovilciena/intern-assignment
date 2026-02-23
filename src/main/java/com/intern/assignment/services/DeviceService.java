@@ -21,8 +21,8 @@ public class DeviceService {
         return deviceRepository.createDevice(device);
     }
 
-    public List<Device> searchDevices(String deviceName, String buildingName, String partNumber, String deviceType) {
+    public List<Device> searchDevices(String deviceName, String buildingName, String partNumber, String deviceType, int numberOfShelfPositions) {
         logger.info("Device Service: Search Devices function called and passed to repository");
-        return deviceRepository.searchDevices(buildingName, deviceName, partNumber, deviceType);
+        return deviceRepository.searchDevices(buildingName, deviceName, partNumber, deviceType, numberOfShelfPositions);
     }
 }

@@ -19,12 +19,13 @@ public class DeviceRepository {
     private final static Logger logger = LoggerFactory.getLogger(DeviceRepository.class);
     public Device createDevice(Device device) {
         final String query = """
-                MERGE (device:Device
+                CREATE (device:Device
                 {
                     deviceName:$deviceName,
                     partNumber:$partNumber,
                     buildingName:$buildingName,
-                    deviceType:$deviceType
+                    deviceType:$deviceType,
+                    numberOfShelfPositions:$numberOfShelfPositions
                 }
                 )
                 RETURN device
@@ -34,6 +35,7 @@ public class DeviceRepository {
         map.put("partNumber", device.getPartNumber());
         map.put("buildingName", device.getBuildingName());
         map.put("deviceType", device.getDeviceType());
+        map.put("numberOfShelfPositions", device.getNumberOfShelfPositions());
 
         var result = driver.executableQuery(query).withParameters(map).execute();
         var record = result.records()
@@ -41,10 +43,11 @@ public class DeviceRepository {
                 .map(r -> r.get("device").asNode())
                 .findFirst().orElseThrow(() -> new RuntimeException("Device could not be created"));
         logger.info("Device Repository: Device with ID: {} created successfully", record.elementId());
+        device.setId(record.elementId()); // setting ID of the device created to show at the client
         return device;
     }
 
-    public List<Device> searchDevices(String buildingName, String deviceName, String partNumber, String deviceType) {
+    public List<Device> searchDevices(String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
         String query = "MATCH (device:Device) WHERE 1=1 ";
         Map<String, Object> params = new HashMap<>();
 
@@ -64,6 +67,10 @@ public class DeviceRepository {
             query += "AND device.partNumber = $partNumber ";
             params.put("partNumber",partNumber);
         }
+        if(numberOfShelfPositions != 0) {
+            query += "AND device.numberOfShelfPositions = $numberOfShelfPositions ";
+            params.put("numberOfShelfPositions", numberOfShelfPositions);
+        }
 
         query += "RETURN device";
 
@@ -77,6 +84,8 @@ public class DeviceRepository {
             device.setDeviceType(node.get("deviceType").asString());
             device.setBuildingName(node.get("buildingName").asString());
             device.setPartNumber(node.get("partNumber").asString());
+            device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
+            device.setId(node.elementId());
             devices.add(device);
         });
         logger.info("Device Repository: Search devices function accessed with query: {}", query);
