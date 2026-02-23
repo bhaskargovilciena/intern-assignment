@@ -47,10 +47,14 @@ public class DeviceRepository {
         return device;
     }
 
-    public List<Device> searchDevices(String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
+    public List<Device> searchDevices(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
         String query = "MATCH (device:Device) WHERE 1=1 ";
         Map<String, Object> params = new HashMap<>();
 
+        if(id != null) {
+            query += "AND elementId(device) = $id";
+            params.put("id", id);
+        }
         if(buildingName != null) {
             query += "AND device.buildingName = $buildingName ";
             params.put("buildingName", buildingName);
