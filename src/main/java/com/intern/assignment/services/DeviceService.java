@@ -25,4 +25,9 @@ public class DeviceService {
         logger.info("Device Service: Search Devices function called and passed to repository");
         return deviceRepository.searchDevices(buildingName, deviceName, partNumber, deviceType, numberOfShelfPositions);
     }
+
+    public Device updateDevice(String id, String deviceName, String buildingName, String partNumber, String deviceType, int numberOfShelfPositions) {
+        logger.info("Device Service: Update Devices function called and passed to repository");
+        return deviceRepository.updateDevice(id, buildingName, deviceName, partNumber, deviceType, numberOfShelfPositions);
+    }
 }

@@ -39,4 +39,17 @@ public class DeviceController {
         logger.info("Device Controller: Search Device function called");
         return new ResponseEntity<>(deviceService.searchDevices(deviceName, buildingName, partNumber, deviceType, numberOfShelfPositions), HttpStatus.OK);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Device> updateDevice(
+            @RequestParam(value = "id") String id,
+            @RequestParam(value = "deviceName", required = false) String deviceName,
+            @RequestParam(value = "deviceType", required = false) String deviceType,
+            @RequestParam(value = "buildingName", required = false) String buildingName,
+            @RequestParam(value = "partNumber", required = false) String partNumber,
+            @RequestParam(value = "numberOfShelfPositions", defaultValue = "0") int numberOfShelfPositions
+    ) {
+        logger.info("Device Controller: Update Device function called");
+        return new ResponseEntity<>(deviceService.updateDevice(id, deviceName, buildingName, partNumber, deviceType, numberOfShelfPositions), HttpStatus.OK);
+    }
 }

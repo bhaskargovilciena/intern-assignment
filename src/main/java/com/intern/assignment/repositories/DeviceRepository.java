@@ -91,4 +91,51 @@ public class DeviceRepository {
         logger.info("Device Repository: Search devices function accessed with query: {}", query);
         return devices;
     }
+
+    public Device updateDevice(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
+        StringBuilder queryBuilder = new StringBuilder("MATCH (device:Device) WHERE elementId(device) = $id SET ");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        if(buildingName != null) {
+            queryBuilder.append("device.buildingName = $buildingName, ");
+            params.put("buildingName", buildingName);
+        }
+        if(deviceName != null) {
+            queryBuilder.append("device.deviceName = $deviceName, ");
+            params.put("deviceName", deviceName);
+        }
+        if(partNumber != null) {
+            queryBuilder.append("device.partNumber = $partNumber, ");
+            params.put("partNumber", partNumber);
+        }
+        if(deviceType != null) {
+            queryBuilder.append("device.deviceType = $deviceType, ");
+            params.put("deviceType", deviceType);
+        }
+        if(numberOfShelfPositions != 0) {
+            queryBuilder.append("device.numberOfShelfPositions = $numberOfShelfPositions, ");
+            params.put("numberOfShelfPositions", numberOfShelfPositions);
+        }
+
+        queryBuilder.setLength(queryBuilder.length() - 2);
+
+        queryBuilder.append(" RETURN device");
+
+        var records = driver.executableQuery(queryBuilder.toString()).withParameters(params).execute().records();
+
+        Device device = new Device();
+
+        records.forEach(record -> {
+            Node node = record.get("device").asNode();
+            device.setId(node.elementId());
+            device.setDeviceName(node.get("deviceName").asString());
+            device.setDeviceType(node.get("deviceType").asString());
+            device.setBuildingName(node.get("buildingName").asString());
+            device.setPartNumber(node.get("partNumber").asString());
+            device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
+        });
+        logger.info("Device Repository: Update device function accessed with ID: {}", id);
+        return device;
+    }
 }
