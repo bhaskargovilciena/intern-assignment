@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ShelfPositionService {
@@ -20,7 +21,7 @@ public class ShelfPositionService {
         return shelfPositionRepository.createShelfPosition(deviceId, numberOfShelfPositions);
     }
 
-    public List<ShelfPosition> getShelfPositions(String deviceId) {
+    public List<Map<String,Object>> getShelfPositions(String deviceId) {
         return shelfPositionRepository.getShelfPositions(deviceId);
     }
 }

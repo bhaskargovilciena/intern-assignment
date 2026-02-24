@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ShelfService {
     private final ShelfRepository shelfRepository;
@@ -20,5 +22,10 @@ public class ShelfService {
     public Shelf createShelf(String shelfPositionId, Shelf shelf) {
         logger.info("Shelf Service: Shelf creation requested and forwarded to repository");
         return shelfRepository.createShelf(shelfPositionId, shelf);
+    }
+
+    public Shelf getShelf(String shelfPositionId) {
+        logger.info("Shelf Service: Shelf read requested and forwarded to repository");
+        return shelfRepository.getShelf(shelfPositionId);
     }
 }

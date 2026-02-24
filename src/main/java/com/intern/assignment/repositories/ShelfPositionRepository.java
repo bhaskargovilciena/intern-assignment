@@ -1,11 +1,14 @@
 package com.intern.assignment.repositories;
 
 import com.intern.assignment.config.DatabaseConnection;
+import com.intern.assignment.entities.Shelf;
 import com.intern.assignment.entities.ShelfPosition;
+import com.intern.assignment.services.ShelfService;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -16,6 +19,12 @@ import java.util.Map;
 public class ShelfPositionRepository {
     private static final Driver driver = DatabaseConnection.initialise();
     private static final Logger logger = LoggerFactory.getLogger(ShelfPositionRepository.class);
+    private final ShelfService shelfService;
+
+    @Autowired
+    public ShelfPositionRepository(ShelfService shelfService) {
+        this.shelfService = shelfService;
+    }
 
     public List<ShelfPosition> createShelfPosition(String deviceId, int numberOfShelfPositions) {
         String query = """
@@ -47,7 +56,7 @@ public class ShelfPositionRepository {
                 .toList();
     }
 
-    public List<ShelfPosition> getShelfPositions(String deviceId) {
+    public List<Map<String,Object>> getShelfPositions(String deviceId) {
         String query = """
                 MATCH (device:Device) WHERE elementId(device) = $id
                 MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition)
@@ -55,7 +64,7 @@ public class ShelfPositionRepository {
                 """;
         var records = driver.executableQuery(query).withParameters(Map.of("id", deviceId)).execute().records();
 
-        List<ShelfPosition> shelfPositions = new ArrayList<>();
+        List<Map<String,Object>> shelfPositions = new ArrayList<>();
 
         records.stream()
                 .map(record -> record.get("shelfPosition").asNode())
@@ -63,7 +72,11 @@ public class ShelfPositionRepository {
                     ShelfPosition shelfPosition = new ShelfPosition();
                     shelfPosition.setDeviceId(node.get("deviceId").asString());
                     shelfPosition.setId(node.elementId());
-                    shelfPositions.add(shelfPosition);
+                    Shelf shelf = shelfService.getShelf(shelfPosition.getId());
+                    shelfPositions.add(Map.of(
+                            "shelfPosition", shelfPosition,
+                            "shelf", shelf
+                    ));
                 });
 
         return shelfPositions;

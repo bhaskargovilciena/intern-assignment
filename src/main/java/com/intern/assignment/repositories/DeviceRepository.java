@@ -2,7 +2,6 @@ package com.intern.assignment.repositories;
 
 import com.intern.assignment.config.DatabaseConnection;
 import com.intern.assignment.entities.Device;
-import com.intern.assignment.entities.ShelfPosition;
 import com.intern.assignment.services.ShelfPositionService;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.types.Node;
@@ -104,7 +103,7 @@ public class DeviceRepository {
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
             device.setId(node.elementId());
-            List<ShelfPosition> shelfPositions = shelfPositionService.getShelfPositions(device.getId());
+            List<Map<String,Object>> shelfPositions = shelfPositionService.getShelfPositions(device.getId());
             devices.add(Map.of(
               "device", device,
               "shelfPositions", shelfPositions
