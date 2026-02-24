@@ -19,4 +19,8 @@ public class ShelfPositionService {
     public List<ShelfPosition> createShelfPositions(String deviceId, int numberOfShelfPositions) {
         return shelfPositionRepository.createShelfPosition(deviceId, numberOfShelfPositions);
     }
+
+    public List<ShelfPosition> getShelfPositions(String deviceId) {
+        return shelfPositionRepository.getShelfPositions(deviceId);
+    }
 }

@@ -30,7 +30,7 @@ public class DeviceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Device>> searchDevices(
+    public ResponseEntity<List<Map<String,Object>>> searchDevices(
             @RequestParam(value = "id", required = false) String id,
             @RequestParam(value = "deviceName", required = false) String deviceName,
             @RequestParam(value = "deviceType", required = false) String deviceType,

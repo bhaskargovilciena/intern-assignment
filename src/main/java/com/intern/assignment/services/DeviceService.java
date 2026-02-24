@@ -22,7 +22,7 @@ public class DeviceService {
         return deviceRepository.createDevice(device);
     }
 
-    public List<Device> searchDevices(String id, String deviceName, String buildingName, String partNumber, String deviceType, int numberOfShelfPositions) {
+    public List<Map<String,Object>> searchDevices(String id, String deviceName, String buildingName, String partNumber, String deviceType, int numberOfShelfPositions) {
         logger.info("Device Service: Search Devices function called and passed to repository");
         return deviceRepository.searchDevices(id, buildingName, deviceName, partNumber, deviceType, numberOfShelfPositions);
     }

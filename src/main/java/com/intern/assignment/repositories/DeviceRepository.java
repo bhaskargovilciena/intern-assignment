@@ -61,7 +61,7 @@ public class DeviceRepository {
         return result;
     }
 
-    public List<Device> searchDevices(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
+    public List<Map<String,Object>> searchDevices(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
         String query = "MATCH (device:Device) WHERE 1=1 ";
         Map<String, Object> params = new HashMap<>();
 
@@ -90,11 +90,11 @@ public class DeviceRepository {
             params.put("numberOfShelfPositions", numberOfShelfPositions);
         }
 
-        query += "RETURN device";
+        query += "MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition) RETURN device, collect(shelfPosition) as shelfPositions";
 
         var records = driver.executableQuery(query).withParameters(params).execute().records();
 
-        List<Device> devices = new ArrayList<>();
+        List<Map<String,Object>> devices = new ArrayList<>();
         records.forEach(record -> {
             Node node = record.get("device").asNode();
             Device device = new Device();
@@ -104,9 +104,14 @@ public class DeviceRepository {
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
             device.setId(node.elementId());
-            devices.add(device);
+            List<ShelfPosition> shelfPositions = shelfPositionService.getShelfPositions(device.getId());
+            devices.add(Map.of(
+              "device", device,
+              "shelfPositions", shelfPositions
+            ));
         });
         logger.info("Device Repository: Search devices function accessed with query: {}", query);
+
         return devices;
     }
 

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,5 +45,27 @@ public class ShelfPositionRepository {
                     return shelfPosition;
                 })
                 .toList();
+    }
+
+    public List<ShelfPosition> getShelfPositions(String deviceId) {
+        String query = """
+                MATCH (device:Device) WHERE elementId(device) = $id
+                MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition)
+                RETURN shelfPosition
+                """;
+        var records = driver.executableQuery(query).withParameters(Map.of("id", deviceId)).execute().records();
+
+        List<ShelfPosition> shelfPositions = new ArrayList<>();
+
+        records.stream()
+                .map(record -> record.get("shelfPosition").asNode())
+                .forEach(node -> {
+                    ShelfPosition shelfPosition = new ShelfPosition();
+                    shelfPosition.setDeviceId(node.get("deviceId").asString());
+                    shelfPosition.setId(node.elementId());
+                    shelfPositions.add(shelfPosition);
+                });
+
+        return shelfPositions;
     }
 }
