@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Repository
@@ -50,6 +51,35 @@ public class ShelfRepository {
             shelf.setName(node.get("name").asString());
         });
         logger.info("Shelf Repository: Shelf reads performed for shelf position ID: {}", shelfPositionId);
+        return shelf;
+    }
+
+    public Shelf updateShelf(String shelfId, String name, String partNumber) {
+        StringBuilder query = new StringBuilder("MATCH (shelf:Shelf) WHERE elementId(shelf) = $id SET ");
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", shelfId);
+
+        if(name != null) {
+            query.append("shelf.name = $name, ");
+            params.put("name", name);
+        }
+        if(partNumber != null) {
+            query.append("shelf.partNumber = $partNumber, ");
+            params.put("partNumber", partNumber);
+        }
+
+        query.setLength(query.length() - 2);
+        query.append(" RETURN shelf");
+
+        var records = driver.executableQuery(query.toString()).withParameters(params).execute().records();
+        Shelf shelf = new Shelf();
+        records.forEach(record -> {
+            Node node = record.get("shelf").asNode();
+            shelf.setName(node.get("name").asString());
+            shelf.setId(node.elementId());
+            shelf.setPartNumber(node.get("partNumber").asString());
+        });
+        logger.info("Shelf Repository: Shelf updated for ID: {}",shelfId);
         return shelf;
     }
 }

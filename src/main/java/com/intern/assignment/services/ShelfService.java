@@ -26,4 +26,9 @@ public class ShelfService {
         logger.info("Shelf Service: Shelf read requested and forwarded to repository");
         return shelfRepository.getShelf(shelfPositionId);
     }
+
+    public Shelf updateShelf(String shelfId, String name, String partNumber) {
+        logger.info("Shelf Service: Shelf updated requested and forwarded to repository");
+        return shelfRepository.updateShelf(shelfId, name, partNumber);
+    }
 }

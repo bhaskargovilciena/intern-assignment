@@ -32,4 +32,14 @@ public class ShelfController {
         logger.info("Shelf Controller: Shelf read requested");
         return new ResponseEntity<>(shelfService.getShelf(shelfPositionId), HttpStatus.OK);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Shelf> updateShelf(
+            @RequestParam(value = "shelfId") String shelfId,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "partNumber", required = false) String partNumber
+    ) {
+        logger.info("Shelf Controller: Shelf update requested");
+        return new ResponseEntity<>(shelfService.updateShelf(shelfId, name, partNumber), HttpStatus.OK);
+    }
 }
