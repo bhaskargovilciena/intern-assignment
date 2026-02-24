@@ -2,10 +2,13 @@ package com.intern.assignment.repositories;
 
 import com.intern.assignment.config.DatabaseConnection;
 import com.intern.assignment.entities.Device;
+import com.intern.assignment.entities.ShelfPosition;
+import com.intern.assignment.services.ShelfPositionService;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,7 +20,14 @@ import java.util.Map;
 public class DeviceRepository {
     private static final Driver driver = DatabaseConnection.initialise();
     private final static Logger logger = LoggerFactory.getLogger(DeviceRepository.class);
-    public Device createDevice(Device device) {
+    private final ShelfPositionService shelfPositionService;
+
+    @Autowired
+    public DeviceRepository(ShelfPositionService shelfPositionService) {
+        this.shelfPositionService = shelfPositionService;
+    }
+
+    public Map<String,Object> createDevice(Device device) {
         final String query = """
                 CREATE (device:Device
                 {
@@ -37,14 +47,18 @@ public class DeviceRepository {
         map.put("deviceType", device.getDeviceType());
         map.put("numberOfShelfPositions", device.getNumberOfShelfPositions());
 
-        var result = driver.executableQuery(query).withParameters(map).execute();
-        var record = result.records()
+        var record = driver.executableQuery(query).withParameters(map).execute().records()
                 .stream()
                 .map(r -> r.get("device").asNode())
                 .findFirst().orElseThrow(() -> new RuntimeException("Device could not be created"));
         logger.info("Device Repository: Device with ID: {} created successfully", record.elementId());
         device.setId(record.elementId()); // setting ID of the device created to show at the client
-        return device;
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("device", device);
+        result.put("shelfPositions", shelfPositionService.createShelfPositions(device.getId(), device.getNumberOfShelfPositions()));
+
+        return result;
     }
 
     public List<Device> searchDevices(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {

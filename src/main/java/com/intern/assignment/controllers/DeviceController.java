@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/device")
@@ -23,14 +24,14 @@ public class DeviceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Device> createDevice(@RequestBody Device device) {
+    public ResponseEntity<Map<String,Object>> createDevice(@RequestBody Device device) {
         logger.info("Device Controller: Device Creation Requested");
         return new ResponseEntity<>(deviceService.createDevice(device), HttpStatus.OK);
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<Device>> searchDevices(
-            @RequestParam(value = "id") String id,
+            @RequestParam(value = "id", required = false) String id,
             @RequestParam(value = "deviceName", required = false) String deviceName,
             @RequestParam(value = "deviceType", required = false) String deviceType,
             @RequestParam(value = "buildingName", required = false) String buildingName,

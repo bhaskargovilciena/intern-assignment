@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DeviceService {
@@ -16,7 +17,7 @@ public class DeviceService {
     @Autowired
     public DeviceService(DeviceRepository deviceRepository) { this.deviceRepository = deviceRepository; }
 
-    public Device createDevice(Device device) {
+    public Map<String,Object> createDevice(Device device) {
         logger.info("Device Service: Device creation requested and forwarded to Device Repository");
         return deviceRepository.createDevice(device);
     }
