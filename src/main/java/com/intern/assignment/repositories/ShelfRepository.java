@@ -29,10 +29,8 @@ public class ShelfRepository {
                 "partNumber", shelf.getPartNumber()
         )).execute().records();
 
-        records.forEach(record -> {
-                    shelf.setId(record.get("shelf").asNode().elementId());
-                });
-
+        records.forEach(record -> shelf.setId(record.get("shelf").asNode().elementId()));
+        logger.info("Shelf Repository: Shelf created with ID {}", shelf.getId());
         return shelf;
     }
 }

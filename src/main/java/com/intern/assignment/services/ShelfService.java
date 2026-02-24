@@ -2,12 +2,15 @@ package com.intern.assignment.services;
 
 import com.intern.assignment.entities.Shelf;
 import com.intern.assignment.repositories.ShelfRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ShelfService {
     private final ShelfRepository shelfRepository;
+    private final Logger logger = LoggerFactory.getLogger(ShelfService.class);
 
     @Autowired
     public ShelfService(ShelfRepository shelfRepository) {
@@ -15,6 +18,7 @@ public class ShelfService {
     }
 
     public Shelf createShelf(String shelfPositionId, Shelf shelf) {
+        logger.info("Shelf Service: Shelf creation requested and forwarded to repository");
         return shelfRepository.createShelf(shelfPositionId, shelf);
     }
 }
