@@ -21,7 +21,8 @@ public class ShelfRepository {
                 MATCH (shelfPosition:ShelfPosition) WHERE elementId(shelfPosition) = $id
                 MERGE (shelfPosition)-[:HAS]->(shelf:Shelf {
                     name: $name,
-                    partNumber: $partNumber
+                    partNumber: $partNumber,
+                    isDeleted: false
                 })
                 RETURN shelf
                 """;
@@ -31,15 +32,19 @@ public class ShelfRepository {
                 "partNumber", shelf.getPartNumber()
         )).execute().records();
 
-        records.forEach(record -> shelf.setId(record.get("shelf").asNode().elementId()));
+        records.forEach(record -> {
+            Node node = record.get("shelf").asNode();
+            shelf.setId(node.elementId());
+            shelf.setDeleted(node.get("isDeleted").asBoolean());
+        });
         logger.info("Shelf Repository: Shelf created with ID {}", shelf.getId());
         return shelf;
     }
 
     public Shelf getShelf(String shelfPositionId) {
         String query = """
-                MATCH (shelfPosition:ShelfPosition) WHERE elementId(shelfPosition) = $id
-                MATCH (shelfPosition)-[:HAS]->(shelf:Shelf)
+                MATCH (shelfPosition:ShelfPosition) WHERE elementId(shelfPosition) = $id AND shelfPosition.isDeleted = false
+                MATCH (shelfPosition)-[:HAS]->(shelf:Shelf) WHERE shelf.isDeleted = false AND elementId(shelf) IS NOT NULL
                 RETURN shelf
                 """;
         var records = driver.executableQuery(query).withParameters(Map.of("id", shelfPositionId)).execute().records();
@@ -49,13 +54,15 @@ public class ShelfRepository {
             shelf.setId(node.elementId());
             shelf.setPartNumber(node.get("partNumber").asString());
             shelf.setName(node.get("name").asString());
+            shelf.setDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Shelf Repository: Shelf reads performed for shelf position ID: {}", shelfPositionId);
+        if(shelf.getId() == null) return null;
         return shelf;
     }
 
     public Shelf updateShelf(String shelfId, String name, String partNumber) {
-        StringBuilder query = new StringBuilder("MATCH (shelf:Shelf) WHERE elementId(shelf) = $id SET ");
+        StringBuilder query = new StringBuilder("MATCH (shelf:Shelf) WHERE elementId(shelf) = $id AND shelf.isDeleted = false SET ");
         Map<String, Object> params = new HashMap<>();
         params.put("id", shelfId);
 
@@ -78,6 +85,7 @@ public class ShelfRepository {
             shelf.setName(node.get("name").asString());
             shelf.setId(node.elementId());
             shelf.setPartNumber(node.get("partNumber").asString());
+            shelf.setDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Shelf Repository: Shelf updated for ID: {}",shelfId);
         return shelf;

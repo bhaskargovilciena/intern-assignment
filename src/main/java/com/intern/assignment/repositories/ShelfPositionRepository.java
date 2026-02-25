@@ -28,11 +28,12 @@ public class ShelfPositionRepository {
 
     public List<ShelfPosition> createShelfPosition(String deviceId, int numberOfShelfPositions) {
         String query = """
-                MATCH (device:Device) WHERE elementId(device) = $id
+                MATCH (device:Device) WHERE elementId(device) = $id AND device.isDeleted = false
                 WITH device, range(1, $numberOfShelfPositions) AS positions
                 UNWIND positions AS position
                 CREATE (shelfPosition:ShelfPosition {
-                    deviceId: $id
+                    deviceId: $id,
+                    isDeleted: false
                 })
                 MERGE (device)-[:HAS]->(shelfPosition)
                 RETURN collect(shelfPosition) AS shelfPositions
@@ -51,6 +52,7 @@ public class ShelfPositionRepository {
                     ShelfPosition shelfPosition = new ShelfPosition();
                     shelfPosition.setId(node.elementId());
                     shelfPosition.setDeviceId(node.get("deviceId").asString());
+                    shelfPosition.setDeleted(node.get("isDeleted").asBoolean());
                     return shelfPosition;
                 })
                 .toList();
@@ -58,8 +60,8 @@ public class ShelfPositionRepository {
 
     public List<Map<String,Object>> getShelfPositions(String deviceId) {
         String query = """
-                MATCH (device:Device) WHERE elementId(device) = $id
-                MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition)
+                MATCH (device:Device) WHERE elementId(device) = $id AND device.isDeleted = false
+                MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition) WHERE shelfPosition.isDeleted = false AND elementId(shelfPosition) IS NOT NULL
                 RETURN shelfPosition
                 """;
         var records = driver.executableQuery(query).withParameters(Map.of("id", deviceId)).execute().records();
@@ -72,12 +74,15 @@ public class ShelfPositionRepository {
                     ShelfPosition shelfPosition = new ShelfPosition();
                     shelfPosition.setDeviceId(node.get("deviceId").asString());
                     shelfPosition.setId(node.elementId());
+                    shelfPosition.setDeleted(node.get("isDeleted").asBoolean());
                     Shelf shelf = shelfService.getShelf(shelfPosition.getId());
                     shelfPositions.add(Map.of(
-                            "shelfPosition", shelfPosition,
-                            "shelf", shelf
+                            "shelfPosition", shelfPosition
                     ));
+                    if(shelf != null) shelfPositions.getLast().put("shelf", shelf);
                 });
+
+        logger.info("Shelf Position Repository: Shelf Position read requested for device ID: {}", deviceId);
 
         return shelfPositions;
     }

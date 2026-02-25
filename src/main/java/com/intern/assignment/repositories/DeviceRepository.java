@@ -34,7 +34,8 @@ public class DeviceRepository {
                     partNumber:$partNumber,
                     buildingName:$buildingName,
                     deviceType:$deviceType,
-                    numberOfShelfPositions:$numberOfShelfPositions
+                    numberOfShelfPositions:$numberOfShelfPositions,
+                    isDeleted:false
                 }
                 )
                 RETURN device
@@ -52,7 +53,7 @@ public class DeviceRepository {
                 .findFirst().orElseThrow(() -> new RuntimeException("Device could not be created"));
         logger.info("Device Repository: Device with ID: {} created successfully", record.elementId());
         device.setId(record.elementId()); // setting ID of the device created to show at the client
-
+        device.setDeleted(record.get("isDeleted").asBoolean()); // setting the isDeleted property from the device
         Map<String,Object> result = new HashMap<>();
         result.put("device", device);
         result.put("shelfPositions", shelfPositionService.createShelfPositions(device.getId(), device.getNumberOfShelfPositions()));
@@ -61,7 +62,7 @@ public class DeviceRepository {
     }
 
     public List<Map<String,Object>> searchDevices(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
-        String query = "MATCH (device:Device) WHERE 1=1 ";
+        String query = "MATCH (device:Device) WHERE device.isDeleted=false ";
         Map<String, Object> params = new HashMap<>();
 
         if(id != null) {
@@ -103,6 +104,7 @@ public class DeviceRepository {
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
             device.setId(node.elementId());
+            device.setDeleted(node.get("isDeleted").asBoolean());
             List<Map<String,Object>> shelfPositions = shelfPositionService.getShelfPositions(device.getId());
             devices.add(Map.of(
               "device", device,
@@ -115,7 +117,7 @@ public class DeviceRepository {
     }
 
     public Device updateDevice(String id, String buildingName, String deviceName, String partNumber, String deviceType, int numberOfShelfPositions) {
-        StringBuilder queryBuilder = new StringBuilder("MATCH (device:Device) WHERE elementId(device) = $id SET ");
+        StringBuilder queryBuilder = new StringBuilder("MATCH (device:Device) WHERE elementId(device) = $id AND device.isDeleted=false SET ");
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
@@ -156,6 +158,7 @@ public class DeviceRepository {
             device.setBuildingName(node.get("buildingName").asString());
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
+            device.setDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Device Repository: Update device function accessed with ID: {}", id);
         return device;
