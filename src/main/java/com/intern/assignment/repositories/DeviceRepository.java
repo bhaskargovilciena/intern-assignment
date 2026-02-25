@@ -140,6 +140,7 @@ public class DeviceRepository {
         if(numberOfShelfPositions != 0) {
             queryBuilder.append("device.numberOfShelfPositions = $numberOfShelfPositions, ");
             params.put("numberOfShelfPositions", numberOfShelfPositions);
+            shelfPositionService.createShelfPositions(id, numberOfShelfPositions);
         }
 
         queryBuilder.setLength(queryBuilder.length() - 2);
