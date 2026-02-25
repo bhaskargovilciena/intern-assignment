@@ -89,7 +89,7 @@ public class ShelfPositionRepository {
         return shelfPositions;
     }
 
-    public boolean deleteShelfPosition(String deviceId) {
+    public void deleteShelfPosition(String deviceId) {
         String query = """
                 MATCH (device:Device)-[:HAS]->(shelfPosition:ShelfPosition)
                 WHERE elementId(device) = $id AND device.isDeleted = true
@@ -103,7 +103,5 @@ public class ShelfPositionRepository {
             Node node = record.get("shelfPosition").asNode();
             shelfService.deleteShelf(node.elementId());
         });
-
-        return true;
     }
 }

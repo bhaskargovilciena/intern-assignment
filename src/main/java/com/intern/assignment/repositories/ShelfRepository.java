@@ -3,14 +3,12 @@ package com.intern.assignment.repositories;
 import com.intern.assignment.config.DatabaseConnection;
 import com.intern.assignment.entities.Shelf;
 import org.neo4j.driver.Driver;
-import org.neo4j.driver.Record;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -93,7 +91,7 @@ public class ShelfRepository {
         return shelf;
     }
 
-    public boolean deleteShelf(String shelfPositionId) {
+    public void deleteShelf(String shelfPositionId) {
         String query = """
                 MATCH (shelfPosition:ShelfPosition)-[:HAS]->(shelf:Shelf)
                 WHERE elementId(shelfPosition) = $id AND shelfPosition.isDeleted = true
@@ -101,7 +99,5 @@ public class ShelfRepository {
                 """;
 
         driver.executableQuery(query).withParameters(Map.of("id", shelfPositionId)).execute();
-
-        return true;
     }
 }
