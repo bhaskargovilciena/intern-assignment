@@ -54,4 +54,9 @@ public class DeviceController {
         logger.info("Device Controller: Update Device function called");
         return new ResponseEntity<>(deviceService.updateDevice(id, deviceName, buildingName, partNumber, deviceType, numberOfShelfPositions), HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> deleteDevice(@RequestParam(value = "id") String deviceId) {
+        return new ResponseEntity<>(deviceService.deleteDevice(deviceId), HttpStatus.OK);
+    }
 }

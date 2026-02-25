@@ -4,6 +4,7 @@ import com.intern.assignment.config.DatabaseConnection;
 import com.intern.assignment.entities.Device;
 import com.intern.assignment.services.ShelfPositionService;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,5 +163,21 @@ public class DeviceRepository {
         });
         logger.info("Device Repository: Update device function accessed with ID: {}", id);
         return device;
+    }
+
+    public boolean deleteDevice(String deviceId) {
+        String query = """
+                MATCH (device:Device) WHERE elementId(device) = $id
+                SET device.isDeleted = true
+                RETURN device
+                """;
+        List<Record> records = driver.executableQuery(query).withParameters(Map.of("id", deviceId)).execute().records();
+
+        records.forEach(record -> {
+            Node node = record.get("device").asNode();
+            shelfPositionService.deleteShelfPosition(node.elementId());
+        });
+
+        return true;
     }
 }

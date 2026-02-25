@@ -31,4 +31,9 @@ public class DeviceService {
         logger.info("Device Service: Update Devices function called and passed to repository");
         return deviceRepository.updateDevice(id, buildingName, deviceName, partNumber, deviceType, numberOfShelfPositions);
     }
+
+    public boolean deleteDevice(String deviceId) {
+        logger.info("Device Service: Delete device function called and passed to repository");
+        return deviceRepository.deleteDevice(deviceId);
+    }
 }

@@ -5,7 +5,9 @@ import com.intern.assignment.entities.Shelf;
 import com.intern.assignment.entities.ShelfPosition;
 import com.intern.assignment.services.ShelfService;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Value;
+import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,5 +87,23 @@ public class ShelfPositionRepository {
         logger.info("Shelf Position Repository: Shelf Position read requested for device ID: {}", deviceId);
 
         return shelfPositions;
+    }
+
+    public boolean deleteShelfPosition(String deviceId) {
+        String query = """
+                MATCH (device:Device)-[:HAS]->(shelfPosition:ShelfPosition)
+                WHERE elementId(device) = $id AND device.isDeleted = true
+                SET shelfPosition.isDeleted = true
+                RETURN shelfPosition
+                """;
+
+        List<Record> records = driver.executableQuery(query).withParameters(Map.of("id", deviceId)).execute().records();
+
+        records.forEach(record -> {
+            Node node = record.get("shelfPosition").asNode();
+            shelfService.deleteShelf(node.elementId());
+        });
+
+        return true;
     }
 }

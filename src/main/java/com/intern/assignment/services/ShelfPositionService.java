@@ -29,4 +29,9 @@ public class ShelfPositionService {
         logger.info("Shelf Position Service: Shelf Position reads request accepted for device ID: {} and forwarded to repository", deviceId);
         return shelfPositionRepository.getShelfPositions(deviceId);
     }
+
+    public boolean deleteShelfPosition(String deviceId) {
+        logger.info("Shelf Position Service: Shelf Position delete requested and accepted for device ID: {}", deviceId);
+        return shelfPositionRepository.deleteShelfPosition(deviceId);
+    }
 }
