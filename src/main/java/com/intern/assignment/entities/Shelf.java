@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Shelf {
-    boolean isDeleted = false;
+    Boolean isDeleted = false;
     String id;
     String name;
     String partNumber;

@@ -54,7 +54,7 @@ public class ShelfPositionRepository {
                     ShelfPosition shelfPosition = new ShelfPosition();
                     shelfPosition.setId(node.elementId());
                     shelfPosition.setDeviceId(node.get("deviceId").asString());
-                    shelfPosition.setDeleted(node.get("isDeleted").asBoolean());
+                    shelfPosition.setIsDeleted(node.get("isDeleted").asBoolean());
                     return shelfPosition;
                 })
                 .toList();
@@ -76,7 +76,7 @@ public class ShelfPositionRepository {
                     ShelfPosition shelfPosition = new ShelfPosition();
                     shelfPosition.setDeviceId(node.get("deviceId").asString());
                     shelfPosition.setId(node.elementId());
-                    shelfPosition.setDeleted(node.get("isDeleted").asBoolean());
+                    shelfPosition.setIsDeleted(node.get("isDeleted").asBoolean());
                     Shelf shelf = shelfService.getShelf(shelfPosition.getId());
                     shelfPositions.add(Map.of(
                             "shelfPosition", shelfPosition

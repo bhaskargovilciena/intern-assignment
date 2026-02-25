@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Device {
     String id;
-    boolean isDeleted = false;
+    Boolean isDeleted = false;
     String deviceName;
     String partNumber;
     String buildingName;

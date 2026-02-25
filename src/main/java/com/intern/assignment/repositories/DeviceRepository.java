@@ -54,7 +54,7 @@ public class DeviceRepository {
                 .findFirst().orElseThrow(() -> new RuntimeException("Device could not be created"));
         logger.info("Device Repository: Device with ID: {} created successfully", record.elementId());
         device.setId(record.elementId()); // setting ID of the device created to show at the client
-        device.setDeleted(record.get("isDeleted").asBoolean()); // setting the isDeleted property from the device
+        device.setIsDeleted(record.get("isDeleted").asBoolean()); // setting the isDeleted property from the device
         Map<String,Object> result = new HashMap<>();
         result.put("device", device);
         result.put("shelfPositions", shelfPositionService.createShelfPositions(device.getId(), device.getNumberOfShelfPositions()));
@@ -92,7 +92,6 @@ public class DeviceRepository {
         }
 
         query += "MATCH (device)-[:HAS]->(shelfPosition:ShelfPosition) RETURN device, collect(shelfPosition) as shelfPositions";
-
         var records = driver.executableQuery(query).withParameters(params).execute().records();
 
         List<Map<String,Object>> devices = new ArrayList<>();
@@ -105,7 +104,7 @@ public class DeviceRepository {
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
             device.setId(node.elementId());
-            device.setDeleted(node.get("isDeleted").asBoolean());
+            device.setIsDeleted(node.get("isDeleted").asBoolean());
             List<Map<String,Object>> shelfPositions = shelfPositionService.getShelfPositions(device.getId());
             devices.add(Map.of(
               "device", device,
@@ -159,7 +158,7 @@ public class DeviceRepository {
             device.setBuildingName(node.get("buildingName").asString());
             device.setPartNumber(node.get("partNumber").asString());
             device.setNumberOfShelfPositions(node.get("numberOfShelfPositions").asInt());
-            device.setDeleted(node.get("isDeleted").asBoolean());
+            device.setIsDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Device Repository: Update device function accessed with ID: {}", id);
         return device;

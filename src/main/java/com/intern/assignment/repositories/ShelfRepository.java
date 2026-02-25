@@ -35,7 +35,7 @@ public class ShelfRepository {
         records.forEach(record -> {
             Node node = record.get("shelf").asNode();
             shelf.setId(node.elementId());
-            shelf.setDeleted(node.get("isDeleted").asBoolean());
+            shelf.setIsDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Shelf Repository: Shelf created with ID {}", shelf.getId());
         return shelf;
@@ -54,7 +54,7 @@ public class ShelfRepository {
             shelf.setId(node.elementId());
             shelf.setPartNumber(node.get("partNumber").asString());
             shelf.setName(node.get("name").asString());
-            shelf.setDeleted(node.get("isDeleted").asBoolean());
+            shelf.setIsDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Shelf Repository: Shelf reads performed for shelf position ID: {}", shelfPositionId);
         if(shelf.getId() == null) return null;
@@ -85,7 +85,7 @@ public class ShelfRepository {
             shelf.setName(node.get("name").asString());
             shelf.setId(node.elementId());
             shelf.setPartNumber(node.get("partNumber").asString());
-            shelf.setDeleted(node.get("isDeleted").asBoolean());
+            shelf.setIsDeleted(node.get("isDeleted").asBoolean());
         });
         logger.info("Shelf Repository: Shelf updated for ID: {}",shelfId);
         return shelf;
