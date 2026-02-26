@@ -24,12 +24,14 @@ public class DeviceController {
     }
 
     @PostMapping("/create")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Map<String,Object>> createDevice(@RequestBody Device device) {
         logger.info("Device Controller: Device Creation Requested");
         return new ResponseEntity<>(deviceService.createDevice(device), HttpStatus.OK);
     }
 
     @GetMapping("/search")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<List<Map<String,Object>>> searchDevices(
             @RequestParam(value = "id", required = false) String id,
             @RequestParam(value = "deviceName", required = false) String deviceName,
@@ -43,6 +45,7 @@ public class DeviceController {
     }
 
     @PutMapping("/update")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Device> updateDevice(
             @RequestParam(value = "id") String id,
             @RequestParam(value = "deviceName", required = false) String deviceName,
@@ -56,6 +59,7 @@ public class DeviceController {
     }
 
     @DeleteMapping("/delete")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Boolean> deleteDevice(@RequestParam(value = "id") String deviceId) {
         return new ResponseEntity<>(deviceService.deleteDevice(deviceId), HttpStatus.OK);
     }

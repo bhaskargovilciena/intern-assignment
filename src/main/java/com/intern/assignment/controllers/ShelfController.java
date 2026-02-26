@@ -22,18 +22,21 @@ public class ShelfController {
     }
 
     @PostMapping("/create")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Shelf> createShelf(@RequestParam(value = "shelfPositionId") String shelfPositionId, @RequestBody Shelf shelf) {
         logger.info("Shelf Controller: Shelf creation requested");
         return new ResponseEntity<>(shelfService.createShelf(shelfPositionId, shelf), HttpStatus.OK);
     }
 
     @GetMapping("/get")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Shelf> getShelf(@RequestParam (value = "shelfPositionId") String shelfPositionId) {
         logger.info("Shelf Controller: Shelf read requested");
         return new ResponseEntity<>(shelfService.getShelf(shelfPositionId), HttpStatus.OK);
     }
 
     @PutMapping("/update")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Shelf> updateShelf(
             @RequestParam(value = "shelfId") String shelfId,
             @RequestParam(value = "name", required = false) String name,
